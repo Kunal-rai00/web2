@@ -5,7 +5,12 @@
 */
 
 function isAnagram(str1, str2) {
+  const reArangedStr1 = str1.toLowerCase().split("").sort().join("");
+  const reArangedStr2 = str2.toLowerCase().split("").sort().join("");
+  return reArangedStr1 === reArangedStr2
 
 }
+
+console.log(isAnagram("spar", "rasp"));
 
 module.exports = isAnagram;
