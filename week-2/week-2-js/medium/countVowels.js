@@ -7,6 +7,22 @@
 
 function countVowels(str) {
     // Your code here
+    let vowelCount = 0;
+    const vowels = ["a", "e", "i", "o", "u"];
+
+    modifiedStr = str.toLowerCase().split("");
+    modifiedStr.forEach((character) => {
+      vowels.forEach((vowels)=>{
+        if(vowels===character){
+          vowelCount += 1;
+        }
+      })
+    });
+    return vowelCount
+    
 }
+
+const ans = countVowels("kunal");
+console.log(ans)
 
 module.exports = countVowels;
