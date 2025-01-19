@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon Cards</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f8f8;
+      text-align: center;
+    }
+
+    .form-container {
+      margin-bottom: 20px;
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .card img {
+      width: 100px;
+      height: 100px;
+    }
+
+    .card h3 {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pokémon Cards</h1>
+  <div class="form-container">
+    <input type="number" id="cardCount" placeholder="Enter number of cards" min="1" />
+    <select id="category">
+      <option value="1">Category 1</option>
+      <option value="2">Category 2</option>
+      <option value="3">Category 3</option>
+      <!-- Add more categories if needed -->
+    </select>
+    <button id="fetchCards">Fetch Pokémon</button>
+  </div>
+
+  <div id="cards" class="cards-container">
+    <!-- Cards will be dynamically added here -->
+  </div>
+
+  <script>
+    const fetchCardsButton = document.getElementById('fetchCards');
+    const cardsContainer = document.getElementById('cards');
+
+    async function fetchPokemon(id) {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch Pokémon');
+      }
+      return response.json();
+    }
+
+    async function renderPokemonCards(count, category) {
+      cardsContainer.innerHTML = '';
+      const startId = category * 100; // Assume each category starts at a multiple of 100
+
+      for (let i = 0; i < count; i++) {
+        try {
+          const pokemon = await fetchPokemon(startId + i + 1);
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}" />
+            <h3>${pokemon.name}</h3>
+            <p>ID: ${pokemon.id}</p>
+          `;
+          cardsContainer.appendChild(card);
+        } catch (error) {
+          console.error(error);
+          const errorCard = document.createElement('div');
+          errorCard.className = 'card';
+          errorCard.textContent = 'Failed to load Pokémon';
+          cardsContainer.appendChild(errorCard);
+        }
+      }
+    }
+
+    fetchCardsButton.addEventListener('click', () => {
+      const cardCount = parseInt(document.getElementById('cardCount').value, 10);
+      const category = parseInt(document.getElementById('category').value, 10);
+
+      if (isNaN(cardCount) || cardCount <= 0) {
+        alert('Please enter a valid number of cards.');
+        return;
+      }
+
+      renderPokemonCards(cardCount, category);
+    });
+  </script>
+</body>
+</html>

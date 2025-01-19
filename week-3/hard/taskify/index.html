@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taskify - Task Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .board {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .category {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 300px;
+      min-height: 400px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .category h2 {
+      margin: 0 0 10px;
+    }
+
+    .task {
+      background-color: #e2e6f0;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      cursor: grab;
+    }
+
+    .task:active {
+      cursor: grabbing;
+    }
+
+    .add-task {
+      margin-top: 10px;
+      display: flex;
+      gap: 5px;
+    }
+
+    .add-task input {
+      flex: 1;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .add-task button {
+      padding: 5px 10px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .add-task button:hover {
+      background-color: #0056b3;
+    }
+
+    .droppable {
+      flex: 1;
+      height: 100%;
+      min-height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Taskify - Task Management</h1>
+  <div class="board">
+    <div class="category" data-category="todo">
+      <h2>To Do</h2>
+      <div class="droppable"></div>
+      <div class="add-task">
+        <input type="text" placeholder="New Task" />
+        <button>Add</button>
+      </div>
+    </div>
+    <div class="category" data-category="in-progress">
+      <h2>In Progress</h2>
+      <div class="droppable"></div>
+    </div>
+    <div class="category" data-category="done">
+      <h2>Done</h2>
+      <div class="droppable"></div>
+    </div>
+  </div>
+
+  <script>
+    const categories = document.querySelectorAll('.category .droppable');
+    const addTaskButtons = document.querySelectorAll('.add-task button');
+
+    addTaskButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const input = button.previousElementSibling;
+        const taskText = input.value.trim();
+        if (taskText) {
+          const taskElement = document.createElement('div');
+          taskElement.className = 'task';
+          taskElement.textContent = taskText;
+          taskElement.draggable = true;
+
+          taskElement.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', taskElement.textContent);
+            e.target.classList.add('dragging');
+          });
+
+          taskElement.addEventListener('dragend', (e) => {
+            e.target.classList.remove('dragging');
+          });
+
+          button.closest('.category').querySelector('.droppable').appendChild(taskElement);
+          input.value = '';
+        }
+      });
+    });
+
+    categories.forEach((category) => {
+      category.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        category.classList.add('drag-over');
+      });
+
+      category.addEventListener('dragleave', () => {
+        category.classList.remove('drag-over');
+      });
+
+      category.addEventListener('drop', (e) => {
+        e.preventDefault();
+        category.classList.remove('drag-over');
+        const taskText = e.dataTransfer.getData('text/plain');
+
+        const taskElement = document.createElement('div');
+        taskElement.className = 'task';
+        taskElement.textContent = taskText;
+        taskElement.draggable = true;
+
+        taskElement.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', taskElement.textContent);
+          e.target.classList.add('dragging');
+        });
+
+        taskElement.addEventListener('dragend', (e) => {
+          e.target.classList.remove('dragging');
+        });
+
+        category.appendChild(taskElement);
+      });
+    });
+  </script>
+</body>
+</html>
